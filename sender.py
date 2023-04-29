@@ -1,13 +1,30 @@
-# with open('source/Okay (Meme Sound) - Sound Effect for editing ( 256kbps cbr ).mp3', 'rb') as mp3_file:
-#     binary_data = mp3_file.read()
-#
-# # print(binary_data)
-#
-# with open('destination/example_reassembled.mp3', 'wb') as mp3_file:
-#     mp3_file.write(binary_data)
+import socket
 
-with open('source/SudokuOffline.exe', 'rb') as mp3_file:
-    binary_data = mp3_file.read()
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-with open('destination/example_reassembled.exe', 'wb') as mp3_file:
-    mp3_file.write(binary_data)
+host = '192.168.1.100'
+port = 5000
+
+client_socket.bind((host, port))
+
+
+def make_request(message, conn):
+    conn.sendall(message)
+    print(message)
+
+
+def parse_data():
+    client_socket.listen(1)
+    conn, addr = client_socket.accept()
+    print("Connected by", addr)
+
+    with open('source/Unknown Brain - Why Do I_ (feat. Bri Tolani) _NCS Release_ ( 256kbps cbr ).mp3', 'rb') as file:
+        binary_data = file.read()
+    # divide the data into chunks
+    chunk_size = 1024
+    chunks = [binary_data[i:i + chunk_size] for i in range(0, len(binary_data), chunk_size)]
+    for chunk in chunks:
+        make_request(chunk, conn)
+
+
+parse_data()
