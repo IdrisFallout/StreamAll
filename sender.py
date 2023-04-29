@@ -1,3 +1,4 @@
+import os
 import socket
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -8,9 +9,17 @@ port = 5000
 client_socket.bind((host, port))
 
 
-def make_request(message, conn):
-    conn.sendall(message)
-    print(message)
+def make_request(file_path, conn):
+    filename = os.path.basename(file_path)
+    conn.sendall(filename.encode())
+    with open(file_path, 'rb') as file:
+        while True:
+            data = file.read(1024)
+            if not data:
+                break
+            conn.send(data)
+        print("File sent successfully")
+    client_socket.close()
 
 
 def parse_data():
@@ -18,13 +27,7 @@ def parse_data():
     conn, addr = client_socket.accept()
     print("Connected by", addr)
 
-    with open('source/Unknown Brain - Why Do I_ (feat. Bri Tolani) _NCS Release_ ( 256kbps cbr ).mp3', 'rb') as file:
-        binary_data = file.read()
-    # divide the data into chunks
-    chunk_size = 1024
-    chunks = [binary_data[i:i + chunk_size] for i in range(0, len(binary_data), chunk_size)]
-    for chunk in chunks:
-        make_request(chunk, conn)
+    make_request('D:\Multimedia\The Lion King (2019) [BluRay] [1080p] [YTS.LT]\The.Lion.King.2019.1080p.BluRay.x264-[YTS.LT].mp4', conn)
 
 
 parse_data()
